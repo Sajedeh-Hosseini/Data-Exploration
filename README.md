@@ -1,4 +1,4 @@
-# Covid 19 - Data-Exploration
+# Covid 19 - Data Exploration
 
 This repository has two table:
 - Covid Deaths
