@@ -3,7 +3,7 @@
 This repository has two table:
 - Covid Deaths
 - Covid Vaccination
- which each of these table contains 244,619 Rows
+ which each of these tables contain 244,619 Rows
  
  In this Project we are going to explore data and extract useful information such as:
  
