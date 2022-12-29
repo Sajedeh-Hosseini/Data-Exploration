@@ -62,7 +62,7 @@ Order By 2 Desc
 
 -- Now let's check the PopulationDeathRate: 
 Select location, population, Max(CAST(total_deaths As int)) TotalDeathCount, 
-									(Max(CAST(total_deaths As int))/population)*100 PopulationDeathRate -- Or we can use CAST function to change total_deaths data type to int (Cast(total_deaths As int))
+(Max(CAST(total_deaths As int))/population)*100 PopulationDeathRate -- Or we can use CAST function to change total_deaths data type to int (Cast(total_deaths As int))
 From PortfolioProject..CovidDeaths
 Where continent Is Not Null
 Group By location, population
@@ -131,15 +131,15 @@ Order By 2,3
 
 -- Using CTE to perform Calculation on Partition By in previous query
 
-With PopVsVac As ( 
-					Select dea.continent, dea.location, dea.date, dea.population, vas.new_vaccinations,
-					SUM(CAST(vas.new_vaccinations As bigint)) OVER (Partition By dea.location Order By dea.location, dea.date) As RollingPeopleVaccinated  
-					From PortfolioProject..CovidDeaths dea
-					Join PortfolioProject..CovidVaccinations vas
-						On vas.location = dea.location
-						And vas.date = dea.date
-					Where dea.continent Is Not Null
-					) 
+With PopVsVac As 
+( Select dea.continent, dea.location, dea.date, dea.population, vas.new_vaccinations,
+  SUM(CAST(vas.new_vaccinations As bigint)) OVER (Partition By dea.location Order By dea.location, dea.date) As RollingPeopleVaccinated  
+  From PortfolioProject..CovidDeaths dea
+  Join PortfolioProject..CovidVaccinations vas
+	On vas.location = dea.location
+	And vas.date = dea.date
+  Where dea.continent Is Not Null
+  ) 
 Select *, (RollingPeopleVaccinated/population)*100 PopulationVaccinationRate
 From PopVsVac
 Order By location, date
@@ -176,14 +176,14 @@ Order By location, date
 
 Drop Table If Exists #PopulationVaccinationRate2
 Select * Into #PopulationVaccinationRate2 
-From (Select dea.continent, dea.location, dea.date, dea.population, vas.new_vaccinations,
-	  SUM(CAST(vas.new_vaccinations As bigint)) OVER (Partition By dea.location Order By dea.location, dea.date) As RollingPeopleVaccinated  
-	  From PortfolioProject..CovidDeaths dea
-	  Join PortfolioProject..CovidVaccinations vas
-		 On vas.location = dea.location
-		 And vas.date = dea.date
-	  Where dea.continent Is Not Null
-	   ) As a 
+From ( Select dea.continent, dea.location, dea.date, dea.population, vas.new_vaccinations,
+       SUM(CAST(vas.new_vaccinations As bigint)) OVER (Partition By dea.location Order By dea.location, dea.date) As RollingPeopleVaccinated  
+       From PortfolioProject..CovidDeaths dea
+       Join PortfolioProject..CovidVaccinations vas
+		On vas.location = dea.location
+		And vas.date = dea.date
+       Where dea.continent Is Not Null
+	 ) As a 
 Select * From #PopulationVaccinationRate2
 Order By location, date
 
@@ -191,14 +191,14 @@ Order By location, date
 -- Creating View to store data for later visualizations
 
 Create View PopulationVaccinationRate As 
-(Select dea.continent, dea.location, dea.date, dea.population, vas.new_vaccinations,
- SUM(CAST(vas.new_vaccinations As bigint)) OVER (Partition By dea.location Order By dea.location, dea.date) As RollingPeopleVaccinated  
- From PortfolioProject..CovidDeaths dea
- Join PortfolioProject..CovidVaccinations vas
+( Select dea.continent, dea.location, dea.date, dea.population, vas.new_vaccinations,
+  SUM(CAST(vas.new_vaccinations As bigint)) OVER (Partition By dea.location Order By dea.location, dea.date) As RollingPeopleVaccinated  
+  From PortfolioProject..CovidDeaths dea
+  Join PortfolioProject..CovidVaccinations vas
 	On vas.location = dea.location
 	And vas.date = dea.date
- Where dea.continent Is Not Null
- )
+  Where dea.continent Is Not Null
+  )
 Select *, (RollingPeopleVaccinated/population)*100 PopulationVaccinationRate
 From PopulationVaccinationRate
 Order By location, date
