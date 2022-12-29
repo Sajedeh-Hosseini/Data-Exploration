@@ -90,7 +90,7 @@ Order By 2 Desc
 Select location, MAX(Cast(total_deaths As int))TotalDeathCount
 From PortfolioProject..CovidDeaths
 Where continent Is Null 
-And location Not In ('High income','Upper middle income','Low income','Upper middle income','Lower middle income')
+And location Not In ('High income','Upper middle income','Low income','Upper middle income','Lower middle income','World', 'European Union', 'International')
 Group By location
 Order By 2 Desc
 */
